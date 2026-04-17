@@ -1,17 +1,18 @@
-from flask import Flask, request, redirect
+from flask import Flask, request, redirect, session
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+app.secret_key = "123"
+CORS(app, supports_credentials=True, origins=["http://127.0.0.1:5500"])
 
 @app.route('/status')
 def status():
-    return {"logado": False}
+    return {"logado": session.get("logado", False)}
 
-@app.route('/receber', methods=['POST'])
+@app.route('/login', methods=['POST'])
 def recebe_dados():
     nome = request.form.get('nome')
-    print(nome)
+    session['logado'] = True
 
     return redirect('http://127.0.0.1:5500/graficos.html')
 
