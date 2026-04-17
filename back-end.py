@@ -16,4 +16,9 @@ def recebe_dados():
 
     return redirect('http://127.0.0.1:5500/graficos.html')
 
+@app.route('cadastro', methods=['POST'])
+def cadastrar():
+    session['logado'] = True
+    return redirect('http://127.0.0.1:5500/graficos.html')
+
 app.run(debug=True)
