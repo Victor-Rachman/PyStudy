@@ -2,6 +2,7 @@
 import sqlite3
 from flask import Flask, request, redirect, session
 from flask_cors import CORS
+import bcrypt
 
 #iniciando o flask
 app = Flask(__name__)
@@ -40,30 +41,34 @@ def recebe_dados():
     conn = sqlite3.connect('pystudy.db')
     cur = conn.cursor()
 
-    cur.execute("SELECT * FROM usuarios WHERE nome=? AND senha=?", (nome, senha))
+    cur.execute("SELECT * FROM usuarios WHERE nome=?", (nome,))
     user = cur.fetchone()
     conn.close()
 
     if user:
-        session['logado'] = True
-        return redirect('http://127.0.0.1:5500/graficos.html')
-    else:
-        session['logado'] = False
-        return redirect('http://127.0.0.1:5500/index.html')
+        hash_salvo = user[2]
+        hash_salvo = hash_salvo.encode('utf-8')
 
-
-   
+        if bcrypt.checkpw(senha.encode('utf-8'), hash_salvo):
+            session['logado'] = True
+            return redirect('http://127.0.0.1:5500/graficos.html')
+        
+    session['logado'] = False
+    return redirect('http://127.0.0.1:5500/index.html')
 
 #faz cadastro
 @app.route('/cadastro', methods=['POST'])
 def cadastrar():
     nome = request.form.get('nome')
     senha = request.form.get('senha')
+    
+    senha_bytes = senha.encode('utf-8')
+    hash_senha = bcrypt.hashpw(senha_bytes, bcrypt.gensalt()).decode('utf-8')
 
     conn = sqlite3.connect('pystudy.db')
     cur = conn.cursor()
 
-    cur.execute("INSERT INTO usuarios (nome, senha) VALUES (?, ?)", (nome, senha))
+    cur.execute("INSERT INTO usuarios (nome, senha) VALUES (?, ?)", (nome, hash_senha))
 
     conn.commit()
     conn.close()
