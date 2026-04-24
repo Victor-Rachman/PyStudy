@@ -10,3 +10,19 @@ async function verificar() {
 }
 
 verificar()
+
+const form = document.querySelector("form")
+
+const feitas = document.querySelector('input[name="feitas"]')
+const acert = document.querySelector('input[name="acert"]')
+
+form.addEventListener("submit", (e) => {
+
+    const feitasV = Number(feitas.value)
+    const acertV = Number(acert.value)
+
+    if (acertV > feitasV) {
+        e.preventDefault()
+        alert("Acertos não podem ser maiores que feitas!")
+    }
+})
