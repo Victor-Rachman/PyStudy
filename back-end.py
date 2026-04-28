@@ -176,5 +176,12 @@ def mostra_dados():
 
     return jsonify(dados_t)
 
+@app.route('/logoff')
+def logoff():
+    session.pop('logado', None)
+    session.pop('user_id', None)
+    return redirect('http://127.0.0.1:5500/index.html')
+    
+
 #roda o flask
 app.run(debug=True)
